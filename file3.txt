@@ -1,0 +1,5 @@
+source file-3
+set
+this is from
+practice with git
+full workcycle working with Git and GitHub
