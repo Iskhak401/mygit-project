@@ -3,7 +3,7 @@ name: My-githib-actions
 on: 
   push:
     branches:
-      - master
+      - main
       
       
 jobs: 
