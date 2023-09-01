@@ -1,7 +1,0 @@
-source file-3
-new linee
-
-set=  version package = 0.20
-this is from
-practice with git
-full workcycle working with Git and GitHub
