@@ -10,7 +10,7 @@ resource "aws_iam_user" "s3_user" {
 }
 
 resource "aws_iam_user_policy" "user" {
-  name = "s3-user-policys"
+  name = "s3-user-policyss"
   user = aws_iam_user.s3_user.name
   policy = jsonencode({
     Version = "2012-10-17",
