@@ -48,7 +48,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: develop
     needs: run-checks
-    if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
     steps:
       - uses: actions/checkout@v3
 
