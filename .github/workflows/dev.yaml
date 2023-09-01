@@ -1,4 +1,4 @@
-name: 'Provisioning Infrastructure'
+name: Provision Infrastructure
 
 on:
   pull_request:
@@ -16,106 +16,42 @@ env:
   AWS_DEFAULT_REGION_PROD: us-west-2
   TERRAFORM_VERSION: 1.5.4
 
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-
 jobs:
-  run-checks:
-    name: 'Run Checks'
+  deploy-dev:
+    name: Deploy Dev
     runs-on: ubuntu-latest
+    environment: develop
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Install Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
-
-      # - name: 'Terraform Fmt'
-      #   run: |
-      #     terraform fmt --recursive -check -diff
-
-      - name: "tfsec - Security Scan"
-        uses: aquasecurity/tfsec-pr-commenter-action@v1.3.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
-
-  deploy-dev:
-    name: 'Deploy Dev'
-    runs-on: ubuntu-latest
-    environment: develop
-    needs: run-checks
-    steps:
-      - uses: actions/checkout@v2
-
-       -name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.0  # Change to your desired Terraform version
 
       - name: Configure AWS credentials
         run: |
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
 
-      # - name: Change directory to network
-      #   run: |
-      #     cd network
+     - name: 'Terraform Initialize'
+       run: |
+         cd Yuriy  # Change this to the actual directory name
+         terraform init
+       continue-on-error: true
 
-      # - name: 'Initialize Terraform'
-      #   run: |
-      #     pwd
-      #     ls
-      #     cd network
-      #     terraform init
-          
-      # - name: 'Select Dev Workspace'
-      #   run: |
-      #     pwd
-      #     cd network
-      #     terraform workspace list
-      #     terraform workspace select dev
-
-      - name: 'Terraform Initialize'
-        run: |
-          cd Yuriy
-          terraform init
-        continue-on-error: true
-
-      - name: 'Terraform workspace'
+      - name: Terraform workspace
         run: |
           terraform workspace list
           terraform workspace select default
         continue-on-error: true
 
-      - name: 'Terraform Plan'
+      - name: Terraform Plan
         id: plan
-        run: |
-          terraform plan -no-color -input=false 
+        run: terraform plan -no-color -input=false 
         continue-on-error: true
 
-      # - name: 'Terraform Plan'
-      #   id: plan
-      #   run: |
-      #     pwd
-      #     cd network
-      #     terraform init
-      #     terraform workspace list
-      #     terraform workspace select dev
-      #     terraform plan --var-file ../config/dev.tfvars -no-color -input=false > plan.txt
-      #     # terraform plan -no-color -input=false > plan.txt
-      #     PLAN=$(cat plan.txt)
-      #     echo "PLAN<<EOF" >> $GITHUB_ENV
-      #     echo "$PLAN" >> $GITHUB_ENV
-      #     echo "EOF" >> $GITHUB_ENV
-      #   continue-on-error: true
-
-      
       - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve
-
-  
+        run: terraform apply -auto-approve
