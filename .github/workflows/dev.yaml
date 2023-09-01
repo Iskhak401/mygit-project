@@ -3,12 +3,12 @@ name: 'Provisioning Infrastructure'
 on:
   pull_request:
     branches:
-      - dev
+      - main
       - prod
 
   push:
     branches:
-      - dev
+      - main
       - prod
 
 env:
